@@ -52,7 +52,7 @@ sh -c "aws s3 sync ${SOURCE_DIR:-.} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
               ${ENDPOINT_APPEND} $*"
 
 # Sync index.html with no caching if SPA_MODE is set
-if [ -n "$SPA_MODE" ]; then
+if [ "$SPA_MODE" == "true" ]; then
   sh -c "aws s3 sync index.html s3://${AWS_S3_BUCKET}/${DEST_DIR} \
                 --profile s3-sync-action \
                 --no-progress \
