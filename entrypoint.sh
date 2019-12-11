@@ -44,6 +44,15 @@ sh -c "aws s3 sync ${SOURCE_DIR:-.} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
               --no-progress \
               ${ENDPOINT_APPEND} $*"
 
+# Sync index.html with no caching if SPA_MODE is set
+if [ "$SPA_MODE" == "true" ]; then
+  sh -c "aws s3 sync ${SOURCE_DIR:-.} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
+                --profile s3-sync-action \
+                --no-progress \
+                ${SPA_ARGS_INDEX} \
+                ${ENDPOINT_APPEND} $*"
+fi
+
 # Clear out credentials after we're done.
 # We need to re-run `aws configure` with bogus input instead of
 # deleting ~/.aws in case there are other credentials living there.
