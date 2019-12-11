@@ -27,6 +27,12 @@ if [ -n "$AWS_S3_ENDPOINT" ]; then
   ENDPOINT_APPEND="--endpoint-url $AWS_S3_ENDPOINT"
 fi
 
+# Upload with caching for all except index.html
+if [ "$SPA_MODE" == "true" ]; then
+  SPA_ARGS_ALL="--cache-control 'max-age=${SPA_CACHE:-604800}' --exclude 'index.html'"
+  SPA_ARGS_INDEX="--cache-control 'no-cache'"
+fi
+
 # Create a dedicated profile for this action to avoid conflicts
 # with past/future actions.
 # https://github.com/jakejarvis/s3-sync-action/issues/1
@@ -42,6 +48,7 @@ EOF
 sh -c "aws s3 sync ${SOURCE_DIR:-.} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
               --profile s3-sync-action \
               --no-progress \
+              ${SPA_ARGS_ALL} \
               ${ENDPOINT_APPEND} $*"
 
 # Sync index.html with no caching if SPA_MODE is set
