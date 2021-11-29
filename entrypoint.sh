@@ -27,11 +27,7 @@ if [ -n "$AWS_S3_ENDPOINT" ]; then
   ENDPOINT_APPEND="--endpoint-url $AWS_S3_ENDPOINT"
 fi
 
-# Upload with caching for all except index.html
-if [ "$SPA_MODE" == "true" ]; then
-  SPA_ARGS_ALL="--cache-control 'max-age=${SPA_CACHE:-604800}' --exclude 'index.html'"
-  SPA_ARGS_INDEX="--cache-control 'no-cache'"
-fi
+SPA_ARGS_INDEX="--cache-control 'no-cache'"
 
 # Create a dedicated profile for this action to avoid conflicts
 # with past/future actions.
@@ -43,22 +39,12 @@ ${AWS_REGION}
 text
 EOF
 
-# Sync using our dedicated profile and suppress verbose messages.
-# All other flags are optional via the `args:` directive.
-sh -c "aws s3 sync ${SOURCE_DIR:-.} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
+# Sync index.html with no caching if SPA_MODE is set
+sh -c "aws s3 mv s3://${AWS_S3_BUCKET}/${TAG_DIR}/index.html s3://${AWS_S3_BUCKET}/index.html \
               --profile s3-sync-action \
               --no-progress \
-              ${SPA_ARGS_ALL} \
+              ${SPA_ARGS_INDEX} \
               ${ENDPOINT_APPEND} $*"
-
-# Sync index.html with no caching if SPA_MODE is set
-if [ "$SPA_MODE" == "true" ]; then
-  sh -c "aws s3 sync ${SOURCE_DIR:-.} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
-                --profile s3-sync-action \
-                --no-progress \
-                ${SPA_ARGS_INDEX} \
-                ${ENDPOINT_APPEND} $*"
-fi
 
 # Clear out credentials after we're done.
 # We need to re-run `aws configure` with bogus input instead of
