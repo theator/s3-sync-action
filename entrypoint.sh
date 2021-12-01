@@ -48,6 +48,8 @@ EOF
 sh -c "aws s3 sync ${SOURCE_DIR:-.} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
               --profile s3-sync-action \
               --no-progress \
+              --exact-timestamps \
+              --size-only \
               ${SPA_ARGS_INDEX} \
               ${ENDPOINT_APPEND} $*"
 
@@ -56,6 +58,8 @@ if [ "$SPA_MODE" == "true" ]; then
   sh -c "aws s3 sync ${SOURCE_DIR:-.} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
                 --profile s3-sync-action \
                 --no-progress \
+                --exact-timestamps \
+                --size-only \
                 ${SPA_ARGS_INDEX} \
                 ${ENDPOINT_APPEND} $*"
 fi
