@@ -64,6 +64,14 @@ if [ "$SPA_MODE" == "true" ]; then
                 ${ENDPOINT_APPEND} $*"
 fi
 
+
+# invalidate cache
+aws --profile s3-sync-action \
+  cloudfront create-invalidation \
+  --distribution-id "$DISTRIBUTION" \
+  --paths "/*" \
+  $*
+
 # Clear out credentials after we're done.
 # We need to re-run `aws configure` with bogus input instead of
 # deleting ~/.aws in case there are other credentials living there.
