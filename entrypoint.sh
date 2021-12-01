@@ -50,7 +50,7 @@ sh -c "aws s3 sync ${SOURCE_DIR:-.} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
               --no-progress \
               --exact-timestamps \
               --size-only \
-              ${SPA_ARGS_INDEX} \
+              ${SPA_ARGS_ALL} \
               ${ENDPOINT_APPEND} $*"
 
 # Sync index.html with no caching if SPA_MODE is set
@@ -63,14 +63,6 @@ if [ "$SPA_MODE" == "true" ]; then
                 ${SPA_ARGS_INDEX} \
                 ${ENDPOINT_APPEND} $*"
 fi
-
-
-# invalidate cache
-aws --profile s3-sync-action \
-  cloudfront create-invalidation \
-  --distribution-id "$DISTRIBUTION" \
-  --paths "/*" \
-  $*
 
 # Clear out credentials after we're done.
 # We need to re-run `aws configure` with bogus input instead of
