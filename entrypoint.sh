@@ -40,7 +40,7 @@ text
 EOF
 
 # Sync index.html with no caching if SPA_MODE is set
-sh -c "aws s3 mv s3://${AWS_S3_BUCKET}/${TAG_DIR}/index.html s3://${AWS_S3_BUCKET}/index.html \
+sh -c "aws s3 cp s3://${AWS_S3_BUCKET}/${TAG_DIR}/index.html s3://${AWS_S3_BUCKET}/index.html \
               --profile s3-sync-action \
               --no-progress \
               ${SPA_ARGS_INDEX} \
